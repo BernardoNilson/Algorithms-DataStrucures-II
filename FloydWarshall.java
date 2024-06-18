@@ -31,10 +31,37 @@ public class FloydWarshall {
     // Comeco do algoritmo...
     startTime = System.currentTimeMillis();
 
+    for (Edge edge : g.getDigraph().getEdges()) {
+      int u = Integer.parseInt(edge.getV());
+      int v = Integer.parseInt(edge.getV());
+      dist[u][v] = edge.getWeight();
+      prev[u][v] = u;
+    }
     // Loop de Floyd-Warshall
     for (int k = 0; k < V; k++) {
-        // ...
+      for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+
+        }
+      }
     }
+
+    /*
+     * for each edge (u,v)
+     * dist[u][v] ← w(u,v) // o peso da aresta (u,v)
+     * prev[u][v] ← u
+     * 
+     * for k from 1 to |V| // Loop principal de Floyd-Warshall
+     * for i from 1 to |V|
+     * for j from 1 to |V|
+     * if dist[i][j] > dist[i][k] + dist[k][j] then
+     * dist[i][j] ← dist[i][k] + dist[k][j]
+     * prev[i][j] ← prev[k][j]
+     * if dist[i][i] < 0 then
+     * // Ciclo negativo presente no grafo!
+     * return
+     * 
+     */
 
     // Fim do algoritmo
     endTime = System.currentTimeMillis();
@@ -76,7 +103,7 @@ public class FloydWarshall {
    * @throws UnsupportedOperationException se existir um ciclo negativo
    */
   public double dist(String s, String t) {
-    return -1;
+    return dist[Integer.parseInt(s)][Integer.parseInt(t)];
   }
 
   /**
@@ -88,13 +115,17 @@ public class FloydWarshall {
    *         como um ArrayList de String, e {@code null} se não houver caminho
    * @throws UnsupportedOperationException se existir um ciclo negativo
    */
-  public List<String> caminho(String u, String v) {
+  public List<Integer> caminho(String u, String v) {
     if (temCicloNegativo())
       throw new UnsupportedOperationException("Existe um ciclo negativo!");
     if (!temCaminho(u, v))
-      return null;
-    List<String> lista = new ArrayList<>();
+      return new ArrayList<>();
+
+    List<Integer> lista = new ArrayList<>();
     // Monte e retorne o caminho
+    while (!u.equals(v)) {
+      lista.add(prev[Integer.parseInt(u)][Integer.parseInt(v)]);
+    }
     return lista;
   }
 
@@ -146,7 +177,7 @@ public class FloydWarshall {
         for (String v : verts) {
           if (u != v && fw.temCaminho(u, v)) {
             System.out.print(u + "->" + v + ": ");
-            for (String x : fw.caminho(u, v)) {
+            for (int x : fw.caminho(u, v)) {
               System.out.print(x + " ");
             }
             System.out.println();
