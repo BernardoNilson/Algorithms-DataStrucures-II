@@ -28,12 +28,19 @@ public class FloydWarshall {
     dist = new double[V][V]; // inicialize todos com Double.POSITIVE_INFINITY
     prev = new int[V][V]; // inicialize todos com -1
 
+    for (int k = 0; k < V; k++) {
+      for (int i = 0; i < V; i++) {
+        dist[k][i] = Double.POSITIVE_INFINITY;
+        prev[k][i] = -1;
+      }
+    }
+
     // Comeco do algoritmo...
     startTime = System.currentTimeMillis();
 
     for (Edge edge : g.getDigraph().getEdges()) {
       int u = Integer.parseInt(edge.getV());
-      int v = Integer.parseInt(edge.getV());
+      int v = Integer.parseInt(edge.getW());
       dist[u][v] = edge.getWeight();
       prev[u][v] = u;
     }
@@ -41,27 +48,17 @@ public class FloydWarshall {
     for (int k = 0; k < V; k++) {
       for (int i = 0; i < V; i++) {
         for (int j = 0; j < V; j++) {
-
+          if (dist[i][j] > dist[i][k] + dist[k][j]) {
+            dist[i][j] = dist[i][k] + dist[k][j];
+            prev[i][j] = prev[k][j];
+          }
+        }
+        if (dist[i][i] < 0) {
+          temCicloNegativo = true;
+          return;
         }
       }
     }
-
-    /*
-     * for each edge (u,v)
-     * dist[u][v] ← w(u,v) // o peso da aresta (u,v)
-     * prev[u][v] ← u
-     * 
-     * for k from 1 to |V| // Loop principal de Floyd-Warshall
-     * for i from 1 to |V|
-     * for j from 1 to |V|
-     * if dist[i][j] > dist[i][k] + dist[k][j] then
-     * dist[i][j] ← dist[i][k] + dist[k][j]
-     * prev[i][j] ← prev[k][j]
-     * if dist[i][i] < 0 then
-     * // Ciclo negativo presente no grafo!
-     * return
-     * 
-     */
 
     // Fim do algoritmo
     endTime = System.currentTimeMillis();
@@ -89,7 +86,7 @@ public class FloydWarshall {
    * @return {@code true} se existe um caminho
    */
   public boolean temCaminho(String s, String t) {
-    return true;
+    return prev[Integer.parseInt(s)][Integer.parseInt(t)] != -1;
   }
 
   /**
@@ -121,10 +118,14 @@ public class FloydWarshall {
     if (!temCaminho(u, v))
       return new ArrayList<>();
 
+    int nu = Integer.parseInt(u);
+    int nv = Integer.parseInt(v);
+
     List<Integer> lista = new ArrayList<>();
     // Monte e retorne o caminho
-    while (!u.equals(v)) {
-      lista.add(prev[Integer.parseInt(u)][Integer.parseInt(v)]);
+    while (nu != nv) {
+      nv = prev[nu][nv];
+      lista.addFirst(nv);
     }
     return lista;
   }
@@ -187,6 +188,8 @@ public class FloydWarshall {
     }
     System.out.println();
     System.out.println("Tempo de Floyd-Warshall: " + fw.tempoTotal());
+
+    System.out.println(g.toDot());
   }
 
 }
